@@ -12,7 +12,7 @@ public partial class ListTransactionsPage : ComponentBase
     #region Properties
 
     public bool IsBusy { get; set; } = false;
-    public List<Transaction> Transactions { get; set; } = [];
+    public List<Transaction> Transactions { get; set; } = default!;
     public string SearchTerm { get; set; } = string.Empty;
     public int CurrentYear { get; set; } = DateTime.Now.Year;
     public int CurrentMonth { get; set; } = DateTime.Now.Month;

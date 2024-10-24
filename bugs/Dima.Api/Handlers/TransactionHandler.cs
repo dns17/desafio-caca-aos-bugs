@@ -6,7 +6,9 @@ using Dima.Core.Models;
 using Dima.Core.Requests.Transactions;
 using Dima.Core.Responses;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Stripe.V2;
 
 namespace Dima.Api.Handlers;
 
@@ -21,7 +23,7 @@ public class TransactionHandler(AppDbContext context) : ITransactionHandler
         {
             var transaction = new Transaction
             {
-                UserId = "test@balta.io",
+                UserId = request.UserId,
                 CategoryId = request.CategoryId,
                 CreatedAt = DateTime.Now,
                 Amount = request.Amount,
@@ -30,8 +32,8 @@ public class TransactionHandler(AppDbContext context) : ITransactionHandler
                 Type = request.Type
             };
 
-            context.Transactions.AddAsync(transaction);
-            context.SaveChangesAsync();
+            await context.Transactions.AddAsync(transaction);
+            await context.SaveChangesAsync();
 
             return new Response<Transaction?>(transaction, 201, "Transação criada com sucesso!");
         }
@@ -43,7 +45,36 @@ public class TransactionHandler(AppDbContext context) : ITransactionHandler
 
     public async Task<Response<Transaction?>> UpdateAsync(UpdateTransactionRequest request)
     {
-        throw new NotImplementedException();
+        try
+        {
+
+            var transaction = await context.Transactions
+                    .FirstOrDefaultAsync(x => 
+                        x.Id == request.Id &&
+                        x.UserId == request.UserId);
+
+            if (transaction is null)
+            {
+                return new Response<Transaction?>(null, 400, "Transação não encontrada!");
+            }
+
+            transaction.CategoryId = request.CategoryId;
+            transaction.CreatedAt = DateTime.Now;
+            transaction.Amount = request.Amount;
+            transaction.PaidOrReceivedAt = request.PaidOrReceivedAt;
+            transaction.Title = request.Title;
+            transaction.Type = request.Type;
+
+
+            context.Transactions.Update(transaction);
+            await context.SaveChangesAsync();
+
+            return new Response<Transaction?>(transaction, 201, "Transação atualizada com sucesso!");
+        } 
+        catch
+        {
+            return new Response<Transaction?>(null, 500, "Não foi possível atualizar sua transação");
+        }
     }
 
     public async Task<Response<Transaction?>> DeleteAsync(DeleteTransactionRequest request)
@@ -74,7 +105,8 @@ public class TransactionHandler(AppDbContext context) : ITransactionHandler
         {
             var transaction = await context
                 .Transactions
-                .FirstOrDefaultAsync(x => x.Id == request.Id && x.UserId == request.UserId);
+                .FirstOrDefaultAsync(x => x.Id == request.Id && 
+                ( x.UserId == request.UserId || x.UserId == "teste@balta.io"));
 
             return transaction is null
                 ? new Response<Transaction?>(null, 404, "Transação não encontrada")
@@ -107,7 +139,8 @@ public class TransactionHandler(AppDbContext context) : ITransactionHandler
                 .Where(x =>
                     x.PaidOrReceivedAt >= request.StartDate &&
                     x.PaidOrReceivedAt <= request.EndDate &&
-                    x.UserId == request.UserId)
+
+                    (x.UserId == "teste@balta.io" || x.UserId == request.UserId))
                 .OrderBy(x => x.PaidOrReceivedAt);
 
             var transactions = await query
