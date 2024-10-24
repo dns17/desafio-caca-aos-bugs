@@ -29,6 +29,11 @@ public partial record Email : ValueObject
 
     public static Email ShouldCreate(string address, IDateTimeProvider dateTimeProvider)
     {
+        if (string.IsNullOrEmpty(address))
+        {
+            throw new InvalidEmailException();
+        }
+
         address = address.Trim();
         address = address.ToLower();
 
@@ -60,6 +65,9 @@ public partial record Email : ValueObject
 
     public static implicit operator string(Email email)
         => email.ToString();
+
+    public static implicit operator Email(string address) =>
+        new Email(address, address.ToBase64(), null!);
 
     #endregion
 
