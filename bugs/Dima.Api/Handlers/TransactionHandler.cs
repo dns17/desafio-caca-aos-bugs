@@ -105,8 +105,7 @@ public class TransactionHandler(AppDbContext context) : ITransactionHandler
         {
             var transaction = await context
                 .Transactions
-                .FirstOrDefaultAsync(x => x.Id == request.Id && 
-                ( x.UserId == request.UserId || x.UserId == "teste@balta.io"));
+                .FirstOrDefaultAsync(x => x.Id == request.Id & x.UserId == request.UserId);
 
             return transaction is null
                 ? new Response<Transaction?>(null, 404, "Transação não encontrada")
@@ -139,8 +138,7 @@ public class TransactionHandler(AppDbContext context) : ITransactionHandler
                 .Where(x =>
                     x.PaidOrReceivedAt >= request.StartDate &&
                     x.PaidOrReceivedAt <= request.EndDate &&
-
-                    (x.UserId == "teste@balta.io" || x.UserId == request.UserId))
+                    x.UserId == request.UserId)
                 .OrderBy(x => x.PaidOrReceivedAt);
 
             var transactions = await query

@@ -11,7 +11,7 @@ public partial class IncomesAndExpensesChartComponent : ComponentBase
     #region Properties
 
     public ChartOptions Options { get; set; } = new();
-    public List<ChartSeries>? Series { get; set; }
+    public List<ChartSeries>? Series { get; set; } = [];
     public List<string> Labels { get; set; } = [];
 
     #endregion
