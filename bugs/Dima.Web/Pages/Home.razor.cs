@@ -31,7 +31,7 @@ public partial class HomePage : ComponentBase
     {
         var request = new GetFinancialSummaryRequest();
         var result = await Handler.GetFinancialSummaryReportAsync(request);
-        if (result.IsSuccess)
+        if (result is { Data: not null, IsSuccess: true })
             Summary = result.Data;
     }
 
@@ -39,7 +39,7 @@ public partial class HomePage : ComponentBase
 
     #region Methods
 
-    public void ToggleShowValues() 
+    public void ToggleShowValues()
         => ShowValues = !ShowValues;
 
     #endregion
