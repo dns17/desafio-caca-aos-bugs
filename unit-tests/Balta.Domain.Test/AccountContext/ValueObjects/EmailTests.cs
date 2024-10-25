@@ -32,7 +32,7 @@ public class EmailTests
     public void ShouldTrimEmail(string invalid_email)
     {
         // Arrange
-        string address = Containt.Email.Address;
+        string address = Constaint.Email.Address;
 
         //Act
         var email = Email.ShouldCreate(invalid_email, _dateTimeProviderFake);
@@ -99,7 +99,7 @@ public class EmailTests
     public void ShouldHashEmailAddress()
     {
         // Arrange
-        string address = Containt.Email.Address;
+        string address = Constaint.Email.Address;
 
         // Act
         var email = Email.ShouldCreate(address, _dateTimeProviderFake);
@@ -112,7 +112,7 @@ public class EmailTests
     public void ShouldExplicitConvertFromString()
     {
         // Arrange
-        string address = Containt.Email.Address;
+        string address = Constaint.Email.Address;
 
         // Act & Assert
         Email email = address;
@@ -126,7 +126,7 @@ public class EmailTests
     {
         // Arrange
         Email email = Email.ShouldCreate(
-            Containt.Email.Address,
+            Constaint.Email.Address,
             _dateTimeProviderFake);
 
         // Act & Assert
@@ -138,13 +138,13 @@ public class EmailTests
     {
         // Arrange
         Email email = Email.ShouldCreate(
-            Containt.Email.Address,
+            Constaint.Email.Address,
             _dateTimeProviderFake);
 
         // Act
         string address = email.ToString();
 
         // Assert
-        address.Should().Be(Containt.Email.Address);
+        address.Should().Be(Constaint.Email.Address);
     }
 }

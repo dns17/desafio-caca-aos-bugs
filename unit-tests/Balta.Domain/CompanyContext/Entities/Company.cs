@@ -10,7 +10,7 @@ public sealed class Company(Guid id) : Entity(id)
     public List<Position> Positions { get; set; }
 
     public List<License> Licenses { get; set; }
-    
+
 }
 
 public class License

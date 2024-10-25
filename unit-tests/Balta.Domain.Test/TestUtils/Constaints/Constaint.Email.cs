@@ -1,6 +1,6 @@
 namespace Balta.Domain.Test.TestUtils.Constaints;
 
-public partial class Containt
+public partial class Constaint
 {
     public static class Email
     {

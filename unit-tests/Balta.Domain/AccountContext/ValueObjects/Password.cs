@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Balta.Domain.AccountContext.ValueObjects.Exceptions;
+using Balta.Domain.SharedContext.Abstractions;
 using Balta.Domain.SharedContext.ValueObjects;
 
 namespace Balta.Domain.AccountContext.ValueObjects;
@@ -28,7 +29,8 @@ public record Password : ValueObject
 
     #region Factories
 
-    public static Password ShouldCreate(string plainText)
+    public static Password ShouldCreate(
+        string plainText)
     {
         if (string.IsNullOrEmpty(plainText))
             throw new InvalidPasswordException("Password cannot be null or empty");
@@ -43,7 +45,7 @@ public record Password : ValueObject
             throw new InvalidPasswordException($"Password should have less than {MaxLength} characters");
 
         var hash = ShouldHashPassword(plainText);
-        
+
         return new Password(hash);
     }
 
@@ -60,6 +62,7 @@ public record Password : ValueObject
     #region Public Methods
 
     public static string ShouldGenerate(
+        IRandomProvider randomProvider,
         short length = 16,
         bool includeSpecialChars = true,
         bool upperCase = true)
@@ -68,10 +71,9 @@ public record Password : ValueObject
         var startRandom = upperCase ? 26 : 0;
         var index = 0;
         var res = new char[length];
-        var rnd = new Random();
 
         while (index < length)
-            res[index++] = chars[rnd.Next(startRandom, chars.Length)];
+            res[index++] = chars[randomProvider.Next(startRandom, chars.Length)];
 
         return new string(res);
     }
