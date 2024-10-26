@@ -54,8 +54,8 @@ public record Password : ValueObject
     #region Properties
 
     public string Hash { get; }
-    public DateTime? ExpiresAtUtc { get; }
-    public bool MustChange { get; }
+    public DateTime? ExpiresAtUtc { get; private set; }
+    public bool MustChange { get; private set; }
 
     #endregion
 
@@ -108,6 +108,16 @@ public record Password : ValueObject
         return keyToCheck.SequenceEqual(key);
     }
 
+    public void MarkAsExpired(IDateTimeProvider dateTimeProvider)
+    {
+        ExpiresAtUtc = dateTimeProvider.UtcNow;
+    }
+
+    public void MarkAsMustChange()
+    {
+        MustChange = true;
+    }
+
     #endregion
 
     #region Private Methods
@@ -139,7 +149,7 @@ public record Password : ValueObject
 
     #region Operators
 
-    public static implicit operator Password(string plainTextPassword) => new(plainTextPassword);
+    public static implicit operator Password(string plainTextPassword) => ShouldCreate(plainTextPassword);
     public static implicit operator string(Password password) => password.Hash;
 
     #endregion
